@@ -61,10 +61,22 @@ def svix_squared(cdf):
     >>> round(svix_squared(risk_neutral_cdf(smile, rate=0.03)), 4)
     0.0401
     """
-    ## TODO: Implement this function as specified in the docstring above.
-    raise NotImplementedError(
-        "Implement svix_squared (see HOMEWORK INSTRUCTIONS at the top of this file)"
-    )
+    grid = cdf.grid
+    forward = cdf.forward
+    tau = cdf.maturity_years
+
+    # Out-of-the-money puts at and below the forward, calls above it. The
+    # forward itself is inserted into both pieces so that the segment of the
+    # grid that straddles it is not dropped from the integral.
+    below = grid <= forward
+    above = grid > forward
+    k_put = np.append(grid[below], forward)
+    put = np.append(cdf.put_grid[below], cdf.put(forward))
+    k_call = np.insert(grid[above], 0, forward)
+    call = np.insert(cdf.call_grid[above], 0, cdf.call(forward))
+
+    integral = np.trapezoid(put, k_put) + np.trapezoid(call, k_call)
+    return float(2.0 / (tau * forward) * integral)
 
 
 def interpolate_variance(svix2_near, tau_near, svix2_far, tau_far, horizon_years=HORIZON_DAYS / 365.0):

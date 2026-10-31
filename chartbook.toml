@@ -23,9 +23,10 @@ description = "From settlement prices to the simple variance swap rate, the risk
 path = "_output/02_svix_and_crash_probability_ipynb.ipynb"
 
 
-# TODO: Register the monitor notebook, `03_daily_monitor_ipynb`, following
-# the two entries above: a name, a description, and the path of the executed
-# notebook that `doit` leaves in `_output/`.
+[notebooks.03_daily_monitor_ipynb]
+name = "The Daily Monitor"
+description = "SVIX and the probability of a 20% drop, one row per session: how the history is kept, how the daily update appends to it, and the chart the GitHub Actions workflow publishes to GitHub Pages every morning."
+path = "_output/03_daily_monitor_ipynb.ipynb"
 
 
 [notebooks.04_single_name_crash_bounds_ipynb]
@@ -53,13 +54,29 @@ window in the settings again when it changes; `doit latest` pulls the most
 recent session."""
 
 
-# TODO: Register the monitor's history as `[dataframes.svix_monitor_history]`,
-# following the entry above. It is the CSV in `_output/` that
-# `src/monitor.py` writes, and that the deploy workflow keeps on the
-# `monitor-history` branch. Document it: a name, a description, the path,
-# which column holds the date (`date_col`), how it is produced, and what a
-# reader needs to know (`docs`). The chart below refers to this entry by
-# name, so the site does not build until it exists.
+[dataframes.svix_monitor_history]
+name = "SVIX Monitor History"
+description = "One row per E-mini option session: the 30-day SVIX, the SVIX^2 of the two bracketing end-of-month expirations, the risk-neutral, log-utility, and power-utility probabilities of a 20% and a 10% drop in the S&P 500, and the Cboe VIX close; oldest first"
+path = "_output/svix_monitor_history.csv"
+date_col = "date"
+tags = ["Options", "Volatility", "Monitor"]
+pull_method = "Computed by src/monitor.py from the Databento settlements and the FRED series; `doit` appends the sessions in the pull window, `doit latest` appends the most recent session"
+docs = """The series behind the monitor's chart. `src/monitor.py` prices every
+settlement of a session on a fine moneyness grid, recovers the risk-neutral
+distribution by Breeden-Litzenberger, and writes one row: `date`;
+`near_expiry`, `far_expiry`, `days_near`, `days_far` (the two end-of-month
+expirations that bracket 30 days); `forward_near` (the parity-implied
+future); `rate` (DGS1MO, decimal); `svix2_near`, `svix2_far`, `svix2_30`
+(annualized simple variance swap rates) and `svix_30` (the 30-day index in
+VIX units); `days_used` (the expiry the probabilities are read from);
+`p_star_20`, `p_log_20`, `p_power_20` (risk-neutral, log-utility, and
+power-utility probabilities of a 20% drop); `p_star_10`, `p_log_10`; and
+`vix` (the Cboe VIX close from FRED, when available). New sessions are
+merged in by date, so rerunning never duplicates a row. The file is
+gitignored on `main`; the deploy workflow restores it from the
+`monitor-history` branch before each run and records it there again after,
+so the history grows by one row a day. It holds no settlement prices, which
+stay under the course's Databento license."""
 
 
 [charts]

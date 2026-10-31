@@ -78,10 +78,8 @@ def crash_probability(cdf, alpha):
     >>> round(crash_probability(cdf, 0.90), 4) < round(risk_neutral_crash_prob(cdf, 0.90), 4)
     True
     """
-    ## TODO: Implement this function as specified in the docstring above.
-    raise NotImplementedError(
-        "Implement crash_probability (see HOMEWORK INSTRUCTIONS at the top of this file)"
-    )
+    q_alpha = float(cdf(alpha))
+    return float(alpha * q_alpha / cdf.forward - cdf.put(alpha))
 
 
 def crash_probability_power(cdf, alpha, gamma=GAMMA):
