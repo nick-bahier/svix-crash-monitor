@@ -1,0 +1,20 @@
+[project]
+name = "SVIX Crash Monitor (history)"
+description = "The daily history of an S&P 500 option monitor: Martin's SVIX at two expiries and at 30 days, and the option-implied probability of a market decline."
+
+[dataframes.svix_monitor_history]
+name = "SVIX monitor history"
+description = "One row per trading session: SVIX at the near and far expiries, the 30-day SVIX, the VIX, and crash probabilities."
+path = "svix_monitor_history.csv"
+date_col = "date"
+docs = """
+One row per session, recorded by the daily workflow. Derived quantities only; no option prices.
+
+- near_expiry, far_expiry, days_near, days_far: the two expiries that bracket 30 days, and the days to each.
+- forward_near, rate: the forward price at the near expiry and the risk-free rate used.
+- svix2_near, svix2_far: annualized risk-neutral variance (SVIX squared) at each expiry.
+- svix2_30, svix_30: the variance interpolated to 30 days, and the SVIX index in percent.
+- p_star_20, p_star_10: the risk-neutral probability of a 20 or 10 percent decline over the horizon (days_used).
+- p_log_20, p_log_10, p_power_20: the same probabilities for a log-utility and a power-utility investor.
+- vix: the VIX close for the session.
+"""
